@@ -8,41 +8,33 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Sub CheckMatch()
-    Dim sht As Worksheet
     Dim shtColl As New Collection
-    Dim FileA As Workbook
-    Dim FileB As Workbook
     Dim i As Long
     
 'add the list into a collection
-    Set FileA = Workbooks.Open(ThisWorkbook.Path & "\Reference\FileA.xlsx")
+    With Workbooks.Open(ThisWorkbook.Path & "\Reference\FileA.xlsx")
+        .Activate
+            With .Worksheets("list")
+                Set startingCell = .Range("A1")
+                For Each cell In .Range(startingCell, startingCell.End(xlDown))
+                    shtColl.Add cell.Text, cell
+                Next
+            End With
+        .Close
+    End With
     
-    FileA.Activate
-With FileA.Sheets("list")
-    i = 1
-    Do Until .Range("A" & i) = ""
-        shtColl.Add .Range("A" & i)
-        i = i + 1
-    Loop
-End With
-
 'delete the item in collection if the sheet exists in DCB
-    Set FileB = Workbooks.Open(ThisWorkbook.Path & "\Reference\FileB.xlsx")
-    
-    FileB.Activate
-    
-    For i = 1 To shtColl.Count
-        For Each sht In FileB.Sheets
-            If sht.Name = shtColl(i) Then
-
-            shtColl.Remove (i)
-            End If
-        Next sht
-    Next i
-    
-'then display the revised collection as msgbox or debug.print
-    For i = 1 To shtColl.Count
-    Debug.Print shtColl(i)
-    Next i
+    With Workbooks.Open(ThisWorkbook.Path & "\Reference\FileB.xlsx")
+        .Activate
+        For Each sht In .Sheets
+            shtColl.Remove sht.Name
+        Next
+        .Close
+        
+    'then display the revised collection as msgbox or debug.print
+        For Each Item In shtColl
+            Debug.Print Item
+        Next
+    End With
 
 End Sub
