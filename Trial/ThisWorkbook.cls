@@ -29,7 +29,8 @@ Sub CheckMatch()
         .Close
     End With
     'then display the revised collection as msgbox or debug.print
-    For Each Item In shtColl
-        Debug.Print Item
-    Next
+    On Error Resume next
+       For Each Item In shtColl
+           Debug.Print Item
+       Next
 End Sub
